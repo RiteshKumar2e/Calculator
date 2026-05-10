@@ -1,0 +1,33 @@
+{
+  "name": "calculator",
+  "version": "1.0.0",
+  "description": "Simple and Scientific Calculator App with React Native",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~3.2.3",
+    "@react-navigation/bottom-tabs": "^6.5.0",
+    "@react-navigation/native": "^6.1.0",
+    "expo": "^51.0.0",
+    "react": "^18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "^0.73.0",
+    "react-native-safe-area-context": "^4.7.0",
+    "react-native-screens": "^3.27.0",
+    "react-native-web": "~0.19.10"
+  },
+  "keywords": [
+    "calculator",
+    "react-native",
+    "expo",
+    "scientific"
+  ],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Background -->
+  <rect width="1024" height="1024" fill="#1a1a1a"/>
+  
+  <!-- Center circle background -->
+  <circle cx="512" cy="512" r="300" fill="#222"/>
+  
+  <!-- Calculator display -->
+  <rect x="350" y="300" width="324" height="80" fill="#111" rx="16"/>
+  <text x="512" y="370" font-size="64" font-weight="bold" fill="#ff9500" text-anchor="middle" font-family="Arial">123</text>
+  
+  <!-- Large buttons grid -->
+  <!-- Row 1 -->
+  <rect x="300" y="420" width="60" height="60" fill="#ff9500" rx="8"/>
+  <text x="330" y="460" font-size="32" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="bold">C</text>
+  
+  <rect x="400" y="420" width="60" height="60" fill="#ff9500" rx="8"/>
+  <text x="430" y="460" font-size="32" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="bold">/</text>
+  
+  <rect x="500" y="420" width="60" height="60" fill="#ff9500" rx="8"/>
+  <text x="530" y="460" font-size="32" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="bold">×</text>
+  
+  <rect x="600" y="420" width="60" height="60" fill="#4CAF50" rx="8"/>
+  <text x="630" y="460" font-size="32" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="bold">=</text>
+  
+  <!-- Row 2 -->
+  <rect x="300" y="520" width="60" height="60" fill="#333" rx="8"/>
+  <text x="330" y="560" font-size="32" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="bold">7</text>
+  
+  <rect x="400" y="520" width="60" height="60" fill="#333" rx="8"/>
+  <text x="430" y="560" font-size="32" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="bold">8</text>
+  
+  <rect x="500" y="520" width="60" height="60" fill="#333" rx="8"/>
+  <text x="530" y="560" font-size="32" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="bold">9</text>
+  
+  <rect x="600" y="520" width="60" height="60" fill="#ff9500" rx="8"/>
+  <text x="630" y="560" font-size="32" fill="#fff" text-anchor="middle" font-family="Arial" font-weight="bold">-</text>
+  
+  <!-- Calculator text -->
+  <text x="512" y="680" font-size="48" font-weight="bold" fill="#ff9500" text-anchor="middle" font-family="Arial">CALCULATOR</text>
+</svg>

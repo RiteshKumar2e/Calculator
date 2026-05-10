@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Calculator",
+    "slug": "calculator-app",
+    "version": "1.0.0",
+    "description": "A powerful calculator app with Simple and Scientific modes",
+    "icon": "./assets/icon.svg",
+    "splash": {
+      "image": "./assets/splash.svg",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1a1a"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.calculator.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.svg",
+        "backgroundColor": "#1a1a1a"
+      },
+      "package": "com.calculator.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.svg",
+      "title": "Calculator"
+    },
+    "plugins": [],
+    "platforms": ["ios", "android", "web"]
+  }
+}
