@@ -10,7 +10,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#1a1a1a"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.calculator.app"
@@ -27,6 +29,15 @@
       "title": "Calculator"
     },
     "plugins": [],
-    "platforms": ["ios", "android", "web"]
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2972e02b-99cf-47c9-afc2-1f61d910a7ae"
+      }
+    }
   }
 }
