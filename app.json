@@ -4,9 +4,9 @@
     "slug": "calculator-app",
     "version": "1.0.0",
     "description": "A powerful calculator app with Simple and Scientific modes",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon.svg",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash.svg",
       "resizeMode": "contain",
       "backgroundColor": "#1a1a1a"
     },
@@ -18,14 +18,10 @@
       "bundleIdentifier": "com.calculator.app"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1a1a1a"
-      },
       "package": "com.calculator.app"
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/favicon.svg",
       "title": "Calculator"
     },
     "plugins": [],
