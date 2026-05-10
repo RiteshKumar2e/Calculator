@@ -30,5 +30,8 @@
     "scientific"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "sharp": "^0.34.5"
+  }
 }
