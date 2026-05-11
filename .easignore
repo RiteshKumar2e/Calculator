@@ -1,9 +1,5 @@
-# Exclude gradle cache and lock files
+# Exclude gradle cache and lock files only (these are regenerated on server)
 android/.gradle/
-.gradle/
-
-# Exclude node_modules (EAS installs fresh)
-node_modules/
 
 # Exclude OS files
 .DS_Store
