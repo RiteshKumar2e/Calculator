@@ -183,7 +183,6 @@ export default function MoneyConverter() {
               </Text>
             )}
           </View>
-          </View>
 
           {/* Conversion History */}
           {conversionHistory.length > 0 && (
