@@ -4,14 +4,52 @@ A beautiful, fully-functional calculator app built with React Native and Expo.
 
 ## Features
 
-✨ **Full Calculator Functionality:**
-- Basic arithmetic operations (addition, subtraction, multiplication, division)
+### 📱 Simple Calculator
+- Basic arithmetic operations (+, -, ×, ÷)
 - Percentage calculations
-- Decimal number support
+- Decimal support
 - Delete/Backspace functionality
-- Clear all (C) button
+- **Live calculation history** - See your recent calculations as you work
+- Clear history option
 - Elegant dark theme UI
-- Responsive design
+
+### 🔬 Scientific Calculator
+- All simple calculator features
+- Trigonometric functions (sin, cos, tan)
+- Logarithmic functions (log, ln)
+- Power functions (x², x³, x^y)
+- Square root and absolute value
+- Exponential functions (e^x)
+- DEG/RAD angle mode toggle
+- **Calculation history tracking**
+
+### 💰 Money Converter (NEW!)
+- Convert between 20+ currencies
+- Real-time conversion display
+- Swap currencies with one tap
+- **Conversion history** - Track all your recent conversions
+- Exchange rate reference
+- Supported currencies: USD, EUR, GBP, JPY, CNY, INR, AUD, CAD, CHF, MXN, BRL, ZAR, RUB, KRW, SGD, HKD, NOK, SEK, DKK, PLN
+
+## ✨ New Features Added
+
+✅ **Proper Working Calculator History**
+- Automatically saves calculations when you press "="
+- Shows recent calculations in a scrollable list
+- Example: "2 + 3 = 5" then "5 + 2 = 7" both appear in history
+- Clear history button to remove all entries
+- Keeps last 20 calculations
+
+✅ **Money Converter Tab**
+- New dedicated tab for currency conversion
+- Easy-to-use interface with horizontal currency selection
+- Live conversion as you type
+- Shows exchange rate reference
+
+✅ **Show Recents While Calculating**
+- History appears above the calculator display
+- Doesn't interfere with current calculations
+- Compact design to save screen space
 
 ## Installation
 
@@ -67,38 +105,52 @@ npm run web
 
 ```
 Calculator/
-├── App.js                 # Main calculator component
-├── index.js              # Entry point
-├── app.json              # Expo configuration
-├── package.json          # Project dependencies
-└── README.md             # This file
+├── App.js                          # Main app with navigation
+├── screens/
+│   ├── SimpleCalculator.js        # Simple calculator with history
+│   ├── ScientificCalculator.js    # Scientific calculator with history
+│   └── MoneyConverter.js          # Currency converter (NEW!)
+├── index.js                        # Entry point
+├── app.json                        # Expo configuration
+├── package.json                    # Project dependencies
+└── README.md                       # This file
 ```
 
 ## How to Use
 
+### Simple & Scientific Calculator
 1. **Numbers**: Tap number buttons (0-9) to enter values
 2. **Operations**: Tap operation buttons (+, -, ×, ÷)
 3. **Decimal**: Tap the dot (.) button for decimal numbers
-4. **Percentage**: Calculate percentages using the % button
-5. **Calculate**: Press the equals (=) button to see the result
-6. **Clear**: Press C to clear everything
-7. **Delete**: Press DEL to remove the last digit
+4. **Calculate**: Press the equals (=) button to see the result
+5. **View History**: Recent calculations appear automatically above the display
+6. **Clear History**: Tap "Clear" button in the history section
+7. **Clear**: Press AC to clear everything
+8. **Delete**: Press ⌫ to remove the last digit
+
+### Money Converter
+1. **Enter Amount**: Type the amount you want to convert
+2. **Select From Currency**: Scroll and tap the source currency
+3. **Select To Currency**: Scroll and tap the target currency
+4. **Swap**: Use the "⇅ Swap" button to reverse conversion
+5. **View History**: See all your recent conversions below the result
 
 ## Customization
 
 ### Change Colors
-Edit the `styles` object in [App.js](App.js) to customize:
-- Background color: `backgroundColor: '#1a1a1a'`
+Edit the `styles` object in calculator files to customize:
+- Background color: `backgroundColor: '#000'`
 - Button color: `backgroundColor: '#333'`
 - Operation button color: `backgroundColor: '#ff9500'`
 - Equals button color: `backgroundColor: '#4CAF50'`
 - Display text color: `color: '#fff'`
 
-### Add More Features
-- Sound effects on button press
-- Calculation history
-- Scientific calculator mode
-- Custom themes
+### Extend Features
+- Add more currencies to MoneyConverter
+- Implement persistent storage for history
+- Add sound effects on button press
+- Create custom themes
+- Add unit converter (length, weight, temperature)
 
 ## Troubleshooting
 
@@ -123,8 +175,16 @@ npm install
 
 - **React Native**: Cross-platform mobile development
 - **Expo**: Development and deployment platform
+- **React Navigation**: Tab navigation between calculators
 - **JavaScript/JSX**: Programming language
 - **React Hooks**: State management (useState)
+
+## Screenshots
+
+The app includes three main tabs:
+1. **Simple** - Basic calculator with history
+2. **Scientific** - Advanced calculator with scientific functions
+3. **Converter** - Currency converter with live rates
 
 ## License
 

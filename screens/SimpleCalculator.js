@@ -7,6 +7,7 @@ export default function SimpleCalculator() {
   const [operation, setOperation] = useState(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);
   const [history, setHistory] = useState('');
+  const [calculationHistory, setCalculationHistory] = useState([]);
 
   const handleNumberPress = (num) => {
     if (waitingForOperand) {
@@ -65,6 +66,11 @@ export default function SimpleCalculator() {
 
     if (previousValue !== null && operation) {
       const result = calculate(previousValue, inputValue, operation);
+      const calculation = `${previousValue} ${operation} ${inputValue} = ${result}`;
+      
+      // Add to history
+      setCalculationHistory(prev => [calculation, ...prev].slice(0, 20));
+      
       setDisplay(String(result));
       setHistory('');
       setPreviousValue(null);
@@ -79,6 +85,10 @@ export default function SimpleCalculator() {
     setOperation(null);
     setWaitingForOperand(false);
     setHistory('');
+  };
+
+  const handleClearHistory = () => {
+    setCalculationHistory([]);
   };
 
   const handleDelete = () => {
@@ -106,6 +116,23 @@ export default function SimpleCalculator() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.calculatorContainer}>
+        {/* History Section */}
+        {calculationHistory.length > 0 && (
+          <View style={styles.historySection}>
+            <View style={styles.historyHeader}>
+              <Text style={styles.historyTitle}>Recent Calculations</Text>
+              <TouchableOpacity onPress={handleClearHistory}>
+                <Text style={styles.clearHistoryText}>Clear</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.historyList} showsVerticalScrollIndicator={false}>
+              {calculationHistory.map((calc, index) => (
+                <Text key={index} style={styles.historyItem}>{calc}</Text>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
         {/* Display Area */}
         <View style={styles.displayArea}>
           <Text style={styles.historyText} numberOfLines={1}>{history}</Text>
@@ -177,6 +204,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingBottom: 10,
     justifyContent: 'flex-end',
+  },
+  historySection: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 10,
+    maxHeight: 150,
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  historyTitle: {
+    color: '#ff9500',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  clearHistoryText: {
+    color: '#ff4444',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  historyList: {
+    maxHeight: 100,
+  },
+  historyItem: {
+    color: '#999',
+    fontSize: 13,
+    paddingVertical: 3,
+    fontFamily: 'monospace',
   },
   displayArea: {
     backgroundColor: '#000',

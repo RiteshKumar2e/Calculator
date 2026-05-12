@@ -21,7 +21,7 @@
       "package": "com.calculator.app"
     },
     "web": {
-      "favicon": "./assets/favicon.svg",
+      "favicon": "./assets/icon.png",
       "title": "Calculator"
     },
     "plugins": [],

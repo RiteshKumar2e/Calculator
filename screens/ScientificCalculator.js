@@ -8,6 +8,7 @@ export default function ScientificCalculator() {
   const [waitingForOperand, setWaitingForOperand] = useState(false);
   const [angleMode, setAngleMode] = useState('DEG');
   const [history, setHistory] = useState('');
+  const [calculationHistory, setCalculationHistory] = useState([]);
 
   const handleNumberPress = (num) => {
     if (waitingForOperand) {
@@ -117,6 +118,11 @@ export default function ScientificCalculator() {
 
     if (previousValue !== null && operation) {
       const result = calculate(previousValue, inputValue, operation);
+      const calculation = `${previousValue} ${operation} ${inputValue} = ${result}`;
+      
+      // Add to history
+      setCalculationHistory(prev => [calculation, ...prev].slice(0, 20));
+      
       setDisplay(String(result));
       setHistory('');
       setPreviousValue(null);
@@ -131,6 +137,10 @@ export default function ScientificCalculator() {
     setOperation(null);
     setWaitingForOperand(false);
     setHistory('');
+  };
+
+  const handleClearHistory = () => {
+    setCalculationHistory([]);
   };
 
   const handleDelete = () => {
@@ -175,6 +185,23 @@ export default function ScientificCalculator() {
               <Text style={styles.angleModeText}>{angleMode}</Text>
             </TouchableOpacity>
           </View>
+
+          {/* History Section */}
+          {calculationHistory.length > 0 && (
+            <View style={styles.historySection}>
+              <View style={styles.historyHeader}>
+                <Text style={styles.historyTitle}>Recent Calculations</Text>
+                <TouchableOpacity onPress={handleClearHistory}>
+                  <Text style={styles.clearHistoryText}>Clear</Text>
+                </TouchableOpacity>
+              </View>
+              <ScrollView style={styles.historyList} showsVerticalScrollIndicator={false}>
+                {calculationHistory.map((calc, index) => (
+                  <Text key={index} style={styles.historyItem}>{calc}</Text>
+                ))}
+              </ScrollView>
+            </View>
+          )}
 
           {/* Display Area */}
           <View style={styles.displayArea}>
@@ -283,6 +310,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     paddingHorizontal: 14,
+  },
+  historySection: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 10,
+    maxHeight: 120,
+  },
+  historyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  historyTitle: {
+    color: '#ff9500',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  clearHistoryText: {
+    color: '#ff4444',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  historyList: {
+    maxHeight: 80,
+  },
+  historyItem: {
+    color: '#999',
+    fontSize: 12,
+    paddingVertical: 2,
+    fontFamily: 'monospace',
   },
   modeTitle: {
     fontSize: 18,

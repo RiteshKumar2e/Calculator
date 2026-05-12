@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text } from 'react-native';
 import SimpleCalculator from './screens/SimpleCalculator';
 import ScientificCalculator from './screens/ScientificCalculator';
+import MoneyConverter from './screens/MoneyConverter';
 
 const Tab = createBottomTabNavigator();
 
@@ -23,6 +24,8 @@ export default function App() {
               label = focused ? '🧮' : '🔢';
             } else if (route.name === 'Scientific') {
               label = focused ? '🔬' : '⚙️';
+            } else if (route.name === 'Converter') {
+              label = focused ? '💰' : '💵';
             }
 
             return <Text style={{ fontSize: size, color }}>{label}</Text>;
@@ -43,6 +46,13 @@ export default function App() {
           component={ScientificCalculator}
           options={{
             title: 'Scientific',
+          }}
+        />
+        <Tab.Screen
+          name="Converter"
+          component={MoneyConverter}
+          options={{
+            title: 'Converter',
           }}
         />
       </Tab.Navigator>
