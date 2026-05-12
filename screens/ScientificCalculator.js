@@ -329,26 +329,8 @@ export default function ScientificCalculator() {
             </TouchableOpacity>
           </View>
 
-          {/* History Section */}
-          {calculationHistory.length > 0 && (
-            <View style={styles.historySection}>
-              <View style={styles.historyHeader}>
-                <Text style={styles.historyTitle}>Recent Calculations</Text>
-                <TouchableOpacity onPress={handleClearHistory}>
-                  <Text style={styles.clearHistoryText}>Clear</Text>
-                </TouchableOpacity>
-              </View>
-              <ScrollView style={styles.historyList} showsVerticalScrollIndicator={false}>
-                {calculationHistory.map((calc, index) => (
-                  <Text key={index} style={styles.historyItem}>{calc}</Text>
-                ))}
-              </ScrollView>
-            </View>
-          )}
-
           {/* Display Area */}
           <View style={styles.displayArea}>
-            <Text style={styles.historyText} numberOfLines={1}>{history}</Text>
             <Text style={styles.mainDisplay} numberOfLines={2}>{display}</Text>
           </View>
 
@@ -521,7 +503,7 @@ export default function ScientificCalculator() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -530,7 +512,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   calculatorContainer: {
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
     paddingHorizontal: 10,
     paddingTop: 10,
   },
@@ -548,9 +530,9 @@ const styles = StyleSheet.create({
   },
   memoryIndicator: {
     fontSize: 12,
-    color: '#ff6b6b',
+    color: '#1a237e',
     fontWeight: '600',
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#ece7f2',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 6,
@@ -562,60 +544,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   memButton: {
-    backgroundColor: '#1a1a6b',
+    backgroundColor: '#f1f3f4',
     borderRadius: 8,
     paddingHorizontal: 8,
-  },
-  historySection: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
-    maxHeight: 120,
-  },
-  historyHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  historyTitle: {
-    color: '#ff9500',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  clearHistoryText: {
-    color: '#ff4444',
-    fontSize: 11,
-    fontWeight: '600',
-  },
-  historyList: {
-    maxHeight: 80,
-  },
-  historyItem: {
-    color: '#999',
-    fontSize: 12,
-    paddingVertical: 2,
-    fontFamily: 'monospace',
   },
   modeTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#ff9500',
+    color: '#1a237e',
   },
   angleModeButton: {
-    backgroundColor: '#505050',
+    backgroundColor: '#f1f3f4',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
   },
   angleModeText: {
-    color: '#ff9500',
+    color: '#4b56a0',
     fontWeight: '600',
     fontSize: 12,
   },
   displayArea: {
-    backgroundColor: '#000',
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     paddingHorizontal: 24,
     paddingVertical: 30,
@@ -623,17 +573,10 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     minHeight: 100,
   },
-  historyText: {
-    fontSize: 18,
-    color: '#666',
-    fontWeight: '500',
-    marginBottom: 8,
-    textAlign: 'right',
-  },
   mainDisplay: {
     fontSize: 56,
     fontWeight: '600',
-    color: '#fff',
+    color: '#202124',
     textAlign: 'right',
   },
   scientificRow: {
@@ -643,28 +586,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   sciButton: {
-    backgroundColor: '#2d5a7b',
+    backgroundColor: '#e8f0fe',
     flex: 1,
   },
   moreButton: {
-    backgroundColor: '#1a3a52',
+    backgroundColor: '#ffffff',
     paddingVertical: 12,
     marginHorizontal: 2,
     marginBottom: 10,
     borderRadius: 10,
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#ff9500',
+    borderWidth: 1,
+    borderColor: '#e8eaed',
   },
   moreButtonText: {
-    color: '#ff9500',
+    color: '#4b56a0',
     fontSize: 14,
     fontWeight: '700',
     letterSpacing: 1,
   },
   divider: {
     height: 1,
-    backgroundColor: '#333',
+    backgroundColor: '#e8eaed',
     marginVertical: 12,
   },
   buttonGrid: {
@@ -679,7 +622,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#333',
+    backgroundColor: '#f8f9fa',
     borderRadius: 15,
     margin: 5,
     height: 60,
@@ -691,26 +634,27 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#fff',
+    color: '#202124',
   },
   smallButtonText: {
     fontSize: 15,
     fontWeight: '600',
+    color: '#1a237e',
   },
   numberButton: {
-    backgroundColor: '#333333',
+    backgroundColor: '#f8f9fa',
   },
   functionButton: {
-    backgroundColor: '#505050',
+    backgroundColor: '#ece7f2',
   },
   operationButton: {
-    backgroundColor: '#ff9500',
+    backgroundColor: '#dbe2f9',
   },
   equalsButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4b56a0',
     flex: 1,
   },
   deleteButton: {
-    backgroundColor: '#a84545',
+    backgroundColor: '#fad2cf',
   },
 });

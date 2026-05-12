@@ -4,7 +4,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text } from 'react-native';
 import SimpleCalculator from './screens/SimpleCalculator';
 import ScientificCalculator from './screens/ScientificCalculator';
-import MoneyConverter from './screens/MoneyConverter';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,8 +14,8 @@ export default function App() {
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarStyle: styles.tabBar,
-          tabBarActiveTintColor: '#ff9500',
-          tabBarInactiveTintColor: '#999',
+          tabBarActiveTintColor: '#4b56a0',
+          tabBarInactiveTintColor: '#5f6368',
           tabBarIcon: ({ focused, color, size }) => {
             let label;
 
@@ -24,8 +23,6 @@ export default function App() {
               label = focused ? '🧮' : '🔢';
             } else if (route.name === 'Scientific') {
               label = focused ? '🔬' : '⚙️';
-            } else if (route.name === 'Converter') {
-              label = focused ? '💰' : '💵';
             }
 
             return <Text style={{ fontSize: size, color }}>{label}</Text>;
@@ -48,13 +45,6 @@ export default function App() {
             title: 'Scientific',
           }}
         />
-        <Tab.Screen
-          name="Converter"
-          component={MoneyConverter}
-          options={{
-            title: 'Converter',
-          }}
-        />
       </Tab.Navigator>
     </NavigationContainer>
   );
@@ -62,8 +52,8 @@ export default function App() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#1a1a1a',
-    borderTopColor: '#333',
+    backgroundColor: '#ffffff',
+    borderTopColor: '#e8eaed',
     borderTopWidth: 1,
     paddingBottom: 5,
     paddingTop: 5,

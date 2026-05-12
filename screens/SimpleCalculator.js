@@ -1,190 +1,232 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, ScrollView, Modal } from 'react-native';
 
-export default function SimpleCalculator() {
-  const [display, setDisplay] = useState('0');
-  const [previousValue, setPreviousValue] = useState(null);
-  const [operation, setOperation] = useState(null);
-  const [waitingForOperand, setWaitingForOperand] = useState(false);
-  const [history, setHistory] = useState('');
-  const [calculationHistory, setCalculationHistory] = useState([]);
+const { width } = Dimensions.get('window');
+const BUTTON_SIZE = (width - 60) / 4;
 
-  const handleNumberPress = (num) => {
-    if (waitingForOperand) {
-      setDisplay(String(num));
-      setWaitingForOperand(false);
-    } else {
-      setDisplay(display === '0' ? String(num) : display + num);
-    }
-  };
+export default function SimpleCalculator({ navigation }) {
+  const [expression, setExpression] = useState('');
+  const [result, setResult] = useState('');
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
 
-  const handleDecimal = () => {
-    if (waitingForOperand) {
-      setDisplay('0.');
-      setWaitingForOperand(false);
-    } else if (display.indexOf('.') === -1) {
-      setDisplay(display + '.');
-    }
-  };
-
-  const handleOperation = (nextOperation) => {
-    const inputValue = parseFloat(display);
-
-    if (previousValue === null) {
-      setPreviousValue(inputValue);
-      setHistory(display + ' ' + nextOperation);
-    } else if (operation) {
-      const result = calculate(previousValue, inputValue, operation);
-      setDisplay(String(result));
-      setPreviousValue(result);
-      setHistory(result + ' ' + nextOperation);
-    }
-
-    setWaitingForOperand(true);
-    setOperation(nextOperation);
-  };
-
-  const calculate = (prev, current, op) => {
-    switch (op) {
-      case '+':
-        return prev + current;
-      case '-':
-        return prev - current;
-      case '×':
-        return prev * current;
-      case '÷':
-        return current !== 0 ? prev / current : 0;
-      case '%':
-        return prev % current;
-      default:
-        return current;
-    }
-  };
-
-  const handleEquals = () => {
-    const inputValue = parseFloat(display);
-
-    if (previousValue !== null && operation) {
-      const result = calculate(previousValue, inputValue, operation);
-      const calculation = `${previousValue} ${operation} ${inputValue} = ${result}`;
+  const calculatePreview = (expr) => {
+    try {
+      if (!expr) {
+        setResult('');
+        return;
+      }
+      const sanitizedExpr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/%/g, '/100');
       
-      // Add to history
-      setCalculationHistory(prev => [calculation, ...prev].slice(0, 20));
-      
-      setDisplay(String(result));
-      setHistory('');
-      setPreviousValue(null);
-      setOperation(null);
-      setWaitingForOperand(true);
+      if (/[+\-*/.]$/.test(sanitizedExpr)) {
+        return;
+      }
+
+      const evalResult = new Function(`return ${sanitizedExpr}`)();
+      if (evalResult !== undefined && !isNaN(evalResult)) {
+        const formattedResult = Number(evalResult.toFixed(8));
+        setResult(String(formattedResult));
+      }
+    } catch (e) {
+      // Preview stays empty on error
     }
   };
 
-  const handleClear = () => {
-    setDisplay('0');
-    setPreviousValue(null);
-    setOperation(null);
-    setWaitingForOperand(false);
-    setHistory('');
+  useEffect(() => {
+    calculatePreview(expression);
+  }, [expression]);
+
+  const saveToHistory = (expr, res) => {
+    if (!expr || !res || expr === res) return;
+    const item = { expression: expr, result: res, id: Date.now() };
+    setHistory(prev => [item, ...prev].slice(0, 50));
   };
 
-  const handleClearHistory = () => {
-    setCalculationHistory([]);
-  };
+  const handlePress = (value) => {
+    const isOperator = (c) => ['+', '-', '×', '÷', '%'].includes(c);
+    const lastChar = expression.slice(-1);
 
-  const handleDelete = () => {
-    if (display.length === 1) {
-      setDisplay('0');
+    if (value === 'AC') {
+      setExpression('');
+      setResult('');
+    } else if (value === '⌫') {
+      setExpression(prev => prev.slice(0, -1));
+    } else if (value === '=') {
+      if (result && result !== 'Error' && expression !== result) {
+        saveToHistory(expression, result);
+        setExpression(result);
+        setResult('');
+      }
+    } else if (value === '+/-') {
+      if (!expression) return;
+      setExpression(prev => {
+        const parts = prev.split(/([+\-×÷])/);
+        const lastPart = parts[parts.length - 1];
+        if (lastPart && !isNaN(lastPart)) {
+          parts[parts.length - 1] = String(parseFloat(lastPart) * -1);
+          return parts.join('');
+        }
+        return prev;
+      });
+    } else if (value === '.') {
+      const parts = expression.split(/[+\-×÷]/);
+      const lastNumber = parts[parts.length - 1] || '';
+      if (!lastNumber.includes('.')) {
+        setExpression(prev => prev + '.');
+      }
+    } else if (isOperator(value)) {
+      if (!expression && value !== '-') return;
+      if (isOperator(lastChar)) {
+        setExpression(prev => prev.slice(0, -1) + value);
+      } else {
+        setExpression(prev => prev + value);
+      }
     } else {
-      setDisplay(display.slice(0, -1));
+      if (expression === '0') {
+        setExpression(value);
+      } else {
+        setExpression(prev => prev + value);
+      }
     }
   };
 
-  const handleNegate = () => {
-    setDisplay(String(parseFloat(display) * -1));
-  };
+  const Button = ({ label, type = 'number', onPress, flex = 1 }) => {
+    let backgroundColor = '#f8f9fa';
+    let textColor = '#000';
 
-  const Button = ({ label, onPress, style, textStyle, size = 'normal' }) => (
-    <TouchableOpacity
-      style={[styles.button, style]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <Text style={[styles.buttonText, textStyle]}>{label}</Text>
-    </TouchableOpacity>
-  );
+    if (type === 'operator') {
+      backgroundColor = '#dbe2f9';
+      textColor = '#1a237e';
+    } else if (type === 'function') {
+      backgroundColor = '#ece7f2';
+      textColor = '#4a148c';
+    } else if (type === 'equals') {
+      backgroundColor = '#4b56a0';
+      textColor = '#fff';
+    }
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.button,
+          { backgroundColor, flex },
+          flex > 1 ? { borderRadius: 40, width: 'auto' } : { width: BUTTON_SIZE }
+        ]}
+        onPress={() => onPress(label)}
+        activeOpacity={0.7}
+      >
+        <Text style={[styles.buttonText, { color: textColor }]}>{label}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.calculatorContainer}>
-        {/* History Section */}
-        {calculationHistory.length > 0 && (
-          <View style={styles.historySection}>
+      {/* Top Icons Area */}
+      <View style={styles.iconBar}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => setShowHistory(true)}>
+          <Text style={styles.iconText}>🕒</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Scientific')}>
+          <Text style={styles.iconText}>📏</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* History Modal */}
+      <Modal
+        visible={showHistory}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowHistory(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.historyContainer}>
             <View style={styles.historyHeader}>
-              <Text style={styles.historyTitle}>Recent Calculations</Text>
-              <TouchableOpacity onPress={handleClearHistory}>
-                <Text style={styles.clearHistoryText}>Clear</Text>
+              <Text style={styles.historyTitle}>History</Text>
+              <TouchableOpacity onPress={() => setShowHistory(false)}>
+                <Text style={styles.closeButton}>✕</Text>
               </TouchableOpacity>
             </View>
-            <ScrollView style={styles.historyList} showsVerticalScrollIndicator={false}>
-              {calculationHistory.map((calc, index) => (
-                <Text key={index} style={styles.historyItem}>{calc}</Text>
-              ))}
+            <ScrollView style={styles.historyList}>
+              {history.length === 0 ? (
+                <Text style={styles.emptyHistory}>No history yet</Text>
+              ) : (
+                history.map((item) => (
+                  <TouchableOpacity 
+                    key={item.id} 
+                    style={styles.historyItem}
+                    onPress={() => {
+                      setExpression(item.expression);
+                      setShowHistory(false);
+                    }}
+                  >
+                    <Text style={styles.historyExpr}>{item.expression}</Text>
+                    <Text style={styles.historyRes}>= {item.result}</Text>
+                  </TouchableOpacity>
+                ))
+              )}
             </ScrollView>
+            <TouchableOpacity 
+              style={styles.clearHistoryButton}
+              onPress={() => setHistory([])}
+            >
+              <Text style={styles.clearHistoryText}>Clear History</Text>
+            </TouchableOpacity>
           </View>
-        )}
+        </View>
+      </Modal>
 
-        {/* Display Area */}
-        <View style={styles.displayArea}>
-          <Text style={styles.historyText} numberOfLines={1}>{history}</Text>
-          <Text style={styles.mainDisplay} numberOfLines={2}>{display}</Text>
+      {/* Display Area */}
+      <View style={styles.displayArea}>
+        <View style={styles.expressionContainer}>
+          <Text style={styles.expressionText} numberOfLines={2} ellipsizeMode="head">
+            {expression || '0'}
+          </Text>
+        </View>
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultText}>
+            {result}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.divider} />
+
+      {/* Button Grid */}
+      <View style={styles.buttonGrid}>
+        <View style={styles.row}>
+          <Button label="AC" type="function" onPress={handlePress} />
+          <Button label="⌫" type="function" onPress={handlePress} />
+          <Button label="+/-" type="function" onPress={handlePress} />
+          <Button label="÷" type="operator" onPress={handlePress} />
         </View>
 
-        {/* Button Grid */}
-        <View style={styles.buttonGrid}>
-          {/* Row 1 - Functions */}
-          <View style={styles.row}>
-            <Button label="AC" onPress={handleClear} style={[styles.functionButton, { flex: 2 }]} />
-            <Button label="+/-" onPress={handleNegate} style={styles.functionButton} />
-            <Button label="%" onPress={() => handleOperation('%')} style={styles.functionButton} />
-            <Button label="÷" onPress={() => handleOperation('÷')} style={styles.operationButton} />
-          </View>
+        <View style={styles.row}>
+          <Button label="7" onPress={handlePress} />
+          <Button label="8" onPress={handlePress} />
+          <Button label="9" onPress={handlePress} />
+          <Button label="×" type="operator" onPress={handlePress} />
+        </View>
 
-          {/* Row 2 */}
-          <View style={styles.row}>
-            <Button label="7" onPress={() => handleNumberPress(7)} style={styles.numberButton} />
-            <Button label="8" onPress={() => handleNumberPress(8)} style={styles.numberButton} />
-            <Button label="9" onPress={() => handleNumberPress(9)} style={styles.numberButton} />
-            <Button label="×" onPress={() => handleOperation('×')} style={styles.operationButton} />
-          </View>
+        <View style={styles.row}>
+          <Button label="4" onPress={handlePress} />
+          <Button label="5" onPress={handlePress} />
+          <Button label="6" onPress={handlePress} />
+          <Button label="-" type="operator" onPress={handlePress} />
+        </View>
 
-          {/* Row 3 */}
-          <View style={styles.row}>
-            <Button label="4" onPress={() => handleNumberPress(4)} style={styles.numberButton} />
-            <Button label="5" onPress={() => handleNumberPress(5)} style={styles.numberButton} />
-            <Button label="6" onPress={() => handleNumberPress(6)} style={styles.numberButton} />
-            <Button label="-" onPress={() => handleOperation('-')} style={styles.operationButton} />
-          </View>
+        <View style={styles.row}>
+          <Button label="1" onPress={handlePress} />
+          <Button label="2" onPress={handlePress} />
+          <Button label="3" onPress={handlePress} />
+          <Button label="+" type="operator" onPress={handlePress} />
+        </View>
 
-          {/* Row 4 */}
-          <View style={styles.row}>
-            <Button label="1" onPress={() => handleNumberPress(1)} style={styles.numberButton} />
-            <Button label="2" onPress={() => handleNumberPress(2)} style={styles.numberButton} />
-            <Button label="3" onPress={() => handleNumberPress(3)} style={styles.numberButton} />
-            <Button label="+" onPress={() => handleOperation('+')} style={styles.operationButton} />
-          </View>
-
-          {/* Row 5 */}
-          <View style={styles.row}>
-            <Button label="0" onPress={() => handleNumberPress(0)} style={[styles.numberButton, { flex: 2 }]} />
-            <Button label="." onPress={handleDecimal} style={styles.numberButton} />
-            <Button label="=" onPress={handleEquals} style={styles.equalsButton} />
-          </View>
-
-          {/* Row 6 - Backspace */}
-          <View style={styles.row}>
-            <Button label="AC" onPress={handleClear} style={[styles.functionButton]} />
-            <Button label="⌫" onPress={handleDelete} style={[styles.deleteButton, { flex: 2 }]} />
-          </View>
+        <View style={styles.row}>
+          <Button label="%" type="number" onPress={handlePress} />
+          <Button label="0" onPress={handlePress} />
+          <Button label="." onPress={handlePress} />
+          <Button label="=" type="equals" onPress={handlePress} />
         </View>
       </View>
     </SafeAreaView>
@@ -194,108 +236,141 @@ export default function SimpleCalculator() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
-    paddingHorizontal: 0,
+    backgroundColor: '#fff',
   },
-  calculatorContainer: {
-    flex: 1,
-    backgroundColor: '#000',
+  iconBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
     paddingTop: 10,
-    paddingHorizontal: 10,
-    paddingBottom: 10,
+    gap: 20,
+  },
+  iconButton: {
+    padding: 5,
+  },
+  iconText: {
+    fontSize: 20,
+    color: '#5f6368',
+  },
+  displayArea: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingHorizontal: 25,
+    paddingBottom: 20,
+  },
+  expressionContainer: {
+    alignItems: 'flex-end',
+    marginBottom: 10,
+  },
+  expressionText: {
+    fontSize: 56,
+    color: '#202124',
+    textAlign: 'right',
+  },
+  resultContainer: {
+    alignItems: 'flex-end',
+    minHeight: 40,
+  },
+  resultText: {
+    fontSize: 32,
+    color: '#70757a',
+    textAlign: 'right',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#e8eaed',
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  buttonGrid: {
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    gap: 12,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  button: {
+    height: BUTTON_SIZE,
+    borderRadius: BUTTON_SIZE / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+  },
+  buttonText: {
+    fontSize: 24,
+    fontWeight: '500',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
   },
-  historySection: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
-    maxHeight: 150,
+  historyContainer: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    height: '70%',
+    padding: 24,
   },
   historyHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 20,
   },
   historyTitle: {
-    color: '#ff9500',
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#202124',
   },
-  clearHistoryText: {
-    color: '#ff4444',
-    fontSize: 12,
-    fontWeight: '600',
+  closeButton: {
+    fontSize: 24,
+    color: '#5f6368',
+    padding: 5,
   },
   historyList: {
-    maxHeight: 100,
+    flex: 1,
   },
   historyItem: {
-    color: '#999',
-    fontSize: 13,
-    paddingVertical: 3,
-    fontFamily: 'monospace',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f3f4',
   },
-  displayArea: {
-    backgroundColor: '#000',
-    borderRadius: 12,
-    paddingHorizontal: 24,
-    paddingVertical: 30,
-    marginBottom: 20,
-    justifyContent: 'flex-end',
-    minHeight: 100,
-  },
-  historyText: {
-    fontSize: 20,
-    color: '#666',
-    fontWeight: '500',
-    marginBottom: 8,
+  historyExpr: {
+    fontSize: 18,
+    color: '#5f6368',
     textAlign: 'right',
   },
-  mainDisplay: {
-    fontSize: 64,
+  historyRes: {
+    fontSize: 24,
     fontWeight: '600',
-    color: '#fff',
+    color: '#202124',
     textAlign: 'right',
+    marginTop: 4,
   },
-  buttonGrid: {
-    gap: 10,
-    marginBottom: 10,
+  emptyHistory: {
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 16,
+    color: '#70757a',
   },
-  row: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 2,
-  },
-  button: {
-    flex: 1,
-    justifyContent: 'center',
+  clearHistoryButton: {
+    padding: 16,
     alignItems: 'center',
-    backgroundColor: '#333',
-    borderRadius: 15,
-    margin: 5,
-    height: 60,
+    marginTop: 10,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
   },
-  buttonText: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#fff',
-  },
-  numberButton: {
-    backgroundColor: '#333333',
-  },
-  functionButton: {
-    backgroundColor: '#505050',
-  },
-  operationButton: {
-    backgroundColor: '#ff9500',
-  },
-  equalsButton: {
-    backgroundColor: '#4CAF50',
-    flex: 1,
-  },
-  deleteButton: {
-    backgroundColor: '#a84545',
+  clearHistoryText: {
+    color: '#d93025',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });
+
