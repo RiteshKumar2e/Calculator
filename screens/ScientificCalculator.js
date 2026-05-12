@@ -9,6 +9,10 @@ export default function ScientificCalculator() {
   const [angleMode, setAngleMode] = useState('DEG');
   const [history, setHistory] = useState('');
   const [calculationHistory, setCalculationHistory] = useState([]);
+  const [memory, setMemory] = useState(0);
+  const [showMemory, setShowMemory] = useState(false);
+  const [hexMode, setHexMode] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleNumberPress = (num) => {
     if (waitingForOperand) {
@@ -81,14 +85,29 @@ export default function ScientificCalculator() {
       case 'tan':
         result = angleMode === 'DEG' ? Math.tan(toRad(value)) : Math.tan(value);
         break;
+      case 'asin':
+        result = angleMode === 'DEG' ? toDeg(Math.asin(value)) : Math.asin(value);
+        break;
+      case 'acos':
+        result = angleMode === 'DEG' ? toDeg(Math.acos(value)) : Math.acos(value);
+        break;
+      case 'atan':
+        result = angleMode === 'DEG' ? toDeg(Math.atan(value)) : Math.atan(value);
+        break;
       case 'log':
         result = Math.log10(value);
+        break;
+      case 'log2':
+        result = Math.log2(value);
         break;
       case 'ln':
         result = Math.log(value);
         break;
       case 'sqrt':
         result = Math.sqrt(value);
+        break;
+      case 'cbrt':
+        result = Math.cbrt(value);
         break;
       case 'x²':
         result = Math.pow(value, 2);
@@ -102,15 +121,136 @@ export default function ScientificCalculator() {
       case 'e^x':
         result = Math.exp(value);
         break;
+      case '10^x':
+        result = Math.pow(10, value);
+        break;
       case '|x|':
         result = Math.abs(value);
         break;
+      case 'n!':
+        result = factorial(value);
+        break;
+      case 'π':
+        setDisplay(String(Math.PI));
+        setWaitingForOperand(true);
+        return;
+      case 'e':
+        setDisplay(String(Math.E));
+        setWaitingForOperand(true);
+        return;
+      case '2^x':
+        result = Math.pow(2, value);
+        break;
+      case 'sinh':
+        result = Math.sinh(value);
+        break;
+      case 'cosh':
+        result = Math.cosh(value);
+        break;
+      case 'tanh':
+        result = Math.tanh(value);
+        break;
+      case 'Deg→Rad':
+        result = toRad(value);
+        break;
+      case 'Rad→Deg':
+        result = toDeg(value);
+        break;
+      case 'rand':
+        result = Math.random();
+        break;
+      case 'sec':
+        result = angleMode === 'DEG' ? 1 / Math.cos(toRad(value)) : 1 / Math.cos(value);
+        break;
+      case 'csc':
+        result = angleMode === 'DEG' ? 1 / Math.sin(toRad(value)) : 1 / Math.sin(value);
+        break;
+      case 'cot':
+        result = angleMode === 'DEG' ? 1 / Math.tan(toRad(value)) : 1 / Math.tan(value);
+        break;
+      case 'φ':
+        setDisplay(String((1 + Math.sqrt(5)) / 2));
+        setWaitingForOperand(true);
+        return;
+      case '°':
+        setDisplay(display + '°');
+        return;
+      case 'Hex':
+        setDisplay('0x' + Math.floor(value).toString(16).toUpperCase());
+        setWaitingForOperand(true);
+        return;
+      case 'Bin':
+        setDisplay('0b' + Math.floor(value).toString(2));
+        setWaitingForOperand(true);
+        return;
+      case 'Oct':
+        setDisplay('0o' + Math.floor(value).toString(8));
+        setWaitingForOperand(true);
+        return;
       default:
         result = value;
     }
 
     setDisplay(String(result));
     setWaitingForOperand(true);
+  };
+
+  const factorial = (n) => {
+    n = Math.floor(n);
+    if (n < 0) return NaN;
+    if (n === 0 || n === 1) return 1;
+    let result = 1;
+    for (let i = 2; i <= n; i++) {
+      result *= i;
+    }
+    return result;
+  };
+
+  const gcd = (a, b) => {
+    a = Math.abs(a);
+    b = Math.abs(b);
+    while (b !== 0) {
+      const temp = b;
+      b = a % b;
+      a = temp;
+    }
+    return a;
+  };
+
+  const lcm = (a, b) => {
+    return Math.abs(a * b) / gcd(a, b);
+  };
+
+  const permutation = (n, r) => {
+    if (r > n) return 0;
+    return factorial(n) / factorial(n - r);
+  };
+
+  const combination = (n, r) => {
+    if (r > n) return 0;
+    return factorial(n) / (factorial(r) * factorial(n - r));
+  };
+
+  // Memory Functions
+  const handleMemoryAdd = () => {
+    const value = parseFloat(display);
+    setMemory(memory + value);
+    setWaitingForOperand(true);
+  };
+
+  const handleMemorySubtract = () => {
+    const value = parseFloat(display);
+    setMemory(memory - value);
+    setWaitingForOperand(true);
+  };
+
+  const handleMemoryRecall = () => {
+    setDisplay(String(memory));
+    setWaitingForOperand(true);
+  };
+
+  const handleMemoryClear = () => {
+    setMemory(0);
   };
 
   const handleEquals = () => {
@@ -175,9 +315,12 @@ export default function ScientificCalculator() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.calculatorContainer}>
-          {/* Header with angle mode */}
+          {/* Header with angle mode and memory */}
           <View style={styles.headerRow}>
-            <Text style={styles.modeTitle}>Scientific</Text>
+            <View style={styles.headerLeft}>
+              <Text style={styles.modeTitle}>Scientific</Text>
+              {memory !== 0 && <Text style={styles.memoryIndicator}>M: {memory.toFixed(2)}</Text>}
+            </View>
             <TouchableOpacity
               style={[styles.angleModeButton]}
               onPress={() => setAngleMode(angleMode === 'DEG' ? 'RAD' : 'DEG')}
@@ -209,29 +352,116 @@ export default function ScientificCalculator() {
             <Text style={styles.mainDisplay} numberOfLines={2}>{display}</Text>
           </View>
 
-          {/* Scientific Functions - Top Row */}
+          {/* Memory Buttons */}
+          <View style={styles.memoryRow}>
+            <Button label="M+" onPress={handleMemoryAdd} style={styles.memButton} size="small" />
+            <Button label="M-" onPress={handleMemorySubtract} style={styles.memButton} size="small" />
+            <Button label="MR" onPress={handleMemoryRecall} style={styles.memButton} size="small" />
+            <Button label="MC" onPress={handleMemoryClear} style={styles.memButton} size="small" />
+          </View>
+
+          {/* Scientific Functions - Always Visible Row 1: Trigonometric */}
           <View style={styles.scientificRow}>
             <Button label="sin" onPress={() => handleScientificFunction('sin')} style={styles.sciButton} size="small" />
             <Button label="cos" onPress={() => handleScientificFunction('cos')} style={styles.sciButton} size="small" />
             <Button label="tan" onPress={() => handleScientificFunction('tan')} style={styles.sciButton} size="small" />
-            <Button label="π" onPress={() => setDisplay(String(Math.PI))} style={styles.sciButton} size="small" />
+            <Button label="sinh" onPress={() => handleScientificFunction('sinh')} style={styles.sciButton} size="small" />
           </View>
 
-          {/* Scientific Functions - Row 2 */}
+          {/* Scientific Functions - Always Visible Row 2: Inverse Trig */}
+          <View style={styles.scientificRow}>
+            <Button label="asin" onPress={() => handleScientificFunction('asin')} style={styles.sciButton} size="small" />
+            <Button label="acos" onPress={() => handleScientificFunction('acos')} style={styles.sciButton} size="small" />
+            <Button label="atan" onPress={() => handleScientificFunction('atan')} style={styles.sciButton} size="small" />
+            <Button label="cosh" onPress={() => handleScientificFunction('cosh')} style={styles.sciButton} size="small" />
+          </View>
+
+          {/* Scientific Functions - Always Visible Row 3: Logarithmic */}
           <View style={styles.scientificRow}>
             <Button label="log" onPress={() => handleScientificFunction('log')} style={styles.sciButton} size="small" />
             <Button label="ln" onPress={() => handleScientificFunction('ln')} style={styles.sciButton} size="small" />
-            <Button label="√" onPress={() => handleScientificFunction('sqrt')} style={styles.sciButton} size="small" />
-            <Button label="e^x" onPress={() => handleScientificFunction('e^x')} style={styles.sciButton} size="small" />
+            <Button label="log₂" onPress={() => handleScientificFunction('log2')} style={styles.sciButton} size="small" />
+            <Button label="tanh" onPress={() => handleScientificFunction('tanh')} style={styles.sciButton} size="small" />
           </View>
 
-          {/* Scientific Functions - Row 3 */}
+          {/* Scientific Functions - Always Visible Row 4: Roots & Powers */}
           <View style={styles.scientificRow}>
-            <Button label="x²" onPress={() => handleScientificFunction('x²')} style={styles.sciButton} size="small" />
-            <Button label="x³" onPress={() => handleScientificFunction('x³')} style={styles.sciButton} size="small" />
-            <Button label="1/x" onPress={() => handleScientificFunction('1/x')} style={styles.sciButton} size="small" />
-            <Button label="|x|" onPress={() => handleScientificFunction('|x|')} style={styles.sciButton} size="small" />
+            <Button label="√" onPress={() => handleScientificFunction('sqrt')} style={styles.sciButton} size="small" />
+            <Button label="∛" onPress={() => handleScientificFunction('cbrt')} style={styles.sciButton} size="small" />
+            <Button label="x^y" onPress={() => handleOperation('^')} style={styles.sciButton} size="small" />
+            <Button label="2^x" onPress={() => handleScientificFunction('2^x')} style={styles.sciButton} size="small" />
           </View>
+
+          {/* Show More Button */}
+          <TouchableOpacity 
+            style={styles.moreButton}
+            onPress={() => setShowAdvanced(!showAdvanced)}
+          >
+            <Text style={styles.moreButtonText}>
+              {showAdvanced ? '▼ LESS' : '► MORE'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Additional Advanced Functions - Conditionally Shown */}
+          {showAdvanced && (
+            <>
+              {/* Scientific Functions - More Functions Row */}
+              <View style={styles.scientificRow}>
+                <Button label="e" onPress={() => handleScientificFunction('e')} style={styles.sciButton} size="small" />
+                <Button label="π" onPress={() => handleScientificFunction('π')} style={styles.sciButton} size="small" />
+                <Button label="e^x" onPress={() => handleScientificFunction('e^x')} style={styles.sciButton} size="small" />
+                <Button label="10^x" onPress={() => handleScientificFunction('10^x')} style={styles.sciButton} size="small" />
+              </View>
+
+              {/* Scientific Functions - Special Functions Row */}
+              <View style={styles.scientificRow}>
+                <Button label="x²" onPress={() => handleScientificFunction('x²')} style={styles.sciButton} size="small" />
+                <Button label="x³" onPress={() => handleScientificFunction('x³')} style={styles.sciButton} size="small" />
+                <Button label="1/x" onPress={() => handleScientificFunction('1/x')} style={styles.sciButton} size="small" />
+                <Button label="n!" onPress={() => handleScientificFunction('n!')} style={styles.sciButton} size="small" />
+              </View>
+
+              {/* Scientific Functions - Final Row */}
+              <View style={styles.scientificRow}>
+                <Button label="|x|" onPress={() => handleScientificFunction('|x|')} style={styles.sciButton} size="small" />
+                <Button label="DEL" onPress={handleDelete} style={styles.sciButton} size="small" />
+                <Button label="(" onPress={() => setDisplay(display + '(')} style={styles.sciButton} size="small" />
+                <Button label=")" onPress={() => setDisplay(display + ')')} style={styles.sciButton} size="small" />
+              </View>
+
+              {/* Additional Trig Functions Row */}
+              <View style={styles.scientificRow}>
+                <Button label="sec" onPress={() => handleScientificFunction('sec')} style={styles.sciButton} size="small" />
+                <Button label="csc" onPress={() => handleScientificFunction('csc')} style={styles.sciButton} size="small" />
+                <Button label="cot" onPress={() => handleScientificFunction('cot')} style={styles.sciButton} size="small" />
+                <Button label="φ" onPress={() => handleScientificFunction('φ')} style={styles.sciButton} size="small" />
+              </View>
+
+              {/* Conversion Functions Row */}
+              <View style={styles.scientificRow}>
+                <Button label="°→Rad" onPress={() => handleScientificFunction('Deg→Rad')} style={styles.sciButton} size="small" />
+                <Button label="Rad→°" onPress={() => handleScientificFunction('Rad→Deg')} style={styles.sciButton} size="small" />
+                <Button label="rand" onPress={() => handleScientificFunction('rand')} style={styles.sciButton} size="small" />
+                <Button label="π/2" onPress={() => setDisplay(String(Math.PI / 2))} style={styles.sciButton} size="small" />
+              </View>
+
+              {/* Number Base Conversion Row */}
+              <View style={styles.scientificRow}>
+                <Button label="Hex" onPress={() => handleScientificFunction('Hex')} style={styles.sciButton} size="small" />
+                <Button label="Bin" onPress={() => handleScientificFunction('Bin')} style={styles.sciButton} size="small" />
+                <Button label="Oct" onPress={() => handleScientificFunction('Oct')} style={styles.sciButton} size="small" />
+                <Button label="e/2" onPress={() => setDisplay(String(Math.E / 2))} style={styles.sciButton} size="small" />
+              </View>
+
+              {/* Advanced Functions Row - More options*/}
+              <View style={styles.scientificRow}>
+                <Button label="2π" onPress={() => setDisplay(String(2 * Math.PI))} style={styles.sciButton} size="small" />
+                <Button label="√2" onPress={() => setDisplay(String(Math.sqrt(2)))} style={styles.sciButton} size="small" />
+                <Button label="1/2π" onPress={() => setDisplay(String(1 / (2 * Math.PI)))} style={styles.sciButton} size="small" />
+                <Button label="ln(2)" onPress={() => setDisplay(String(Math.log(2)))} style={styles.sciButton} size="small" />
+              </View>
+            </>
+          )}
 
           {/* Divider */}
           <View style={styles.divider} />
@@ -310,6 +540,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     paddingHorizontal: 14,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  memoryIndicator: {
+    fontSize: 12,
+    color: '#ff6b6b',
+    fontWeight: '600',
+    backgroundColor: '#2a2a2a',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  memoryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
+  memButton: {
+    backgroundColor: '#1a1a6b',
+    borderRadius: 8,
+    paddingHorizontal: 8,
   },
   historySection: {
     backgroundColor: '#1a1a1a',
@@ -390,6 +645,22 @@ const styles = StyleSheet.create({
   sciButton: {
     backgroundColor: '#2d5a7b',
     flex: 1,
+  },
+  moreButton: {
+    backgroundColor: '#1a3a52',
+    paddingVertical: 12,
+    marginHorizontal: 2,
+    marginBottom: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#ff9500',
+  },
+  moreButtonText: {
+    color: '#ff9500',
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 1,
   },
   divider: {
     height: 1,
